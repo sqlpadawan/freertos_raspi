@@ -22,7 +22,7 @@
             "type": "shell",
             "command": "openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c \"program ${workspaceFolder}/build/src/blink.elf verify reset exit\"",
             "problemMatcher": [],
-            "detail": "Requires SWD wiring set up per docs/07-debugging-swd.md. Change interface/target cfg to match your wiring/board."
+            "detail": "Requires a Debug Probe (official or DIY) wired per docs/07-debugging-swd.md. Swap to interface/linuxgpiod.cfg if using direct Pi GPIO wiring instead."
         }
     ]
 }

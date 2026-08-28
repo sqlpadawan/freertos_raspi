@@ -28,15 +28,21 @@ Log out and back in (or reboot) for the group change to take effect.
 
 ## OpenOCD: "Error: unable to open CMSIS-DAP device"
 
-- Picoprobe not flashed correctly, or wrong USB cable (some cables are
-  power-only). Try a different cable/port.
-- Check `lsusb` shows the probe (`2e8a:000c` for CMSIS-DAP Picoprobe).
+Applies to both the official Debug Probe and a DIY spare-Pico probe — they
+present the same USB IDs since they run the same firmware.
+
+- DIY probe: confirm `debugprobe.uf2` actually flashed (see
+  [07-debugging-swd.md](07-debugging-swd.md#flashing-a-diy-probe-spare-pico-only)).
+  Official Debug Probe: this step doesn't apply, it ships ready to use.
+- Wrong USB cable (some are power-only). Try a different cable/port.
+- Check `lsusb` shows the probe (`2e8a:000c` for CMSIS-DAP).
 - On Raspberry Pi OS, you may need a udev rule:
   ```bash
   echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="2e8a", MODE="0666"' | \
-    sudo tee /etc/udev/rules.d/99-picoprobe.rules
+    sudo tee /etc/udev/rules.d/99-debugprobe.rules
   sudo udevadm control --reload-rules && sudo udevadm trigger
   ```
+  Unplug and replug the probe after adding the rule.
 
 ## OpenOCD: "Error: libgpiod: unable to request lines" (direct GPIO/B2 wiring)
 

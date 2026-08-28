@@ -23,7 +23,8 @@ knowledge, no undocumented manual steps.
 | Raspberry Pi 5 (running Raspberry Pi OS) | Development host — runs VS Code, toolchain, OpenOCD |
 | Raspberry Pi Pico or Pico 2 | FreeRTOS target (RP2040 or RP2350) |
 | USB-A/C to Micro-USB/USB-C cable | Power + UF2 flashing |
-| (Optional) second Pico as "Picoprobe", or 3 jumper wires | SWD debugging |
+| (Recommended) [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/) | SWD + UART debugging, no flashing required |
+| (Alternative) second Pico as DIY probe, or 3 jumper wires to Pi 5 GPIO | SWD debugging without buying the official probe |
 
 See [`docs/01-hardware-setup.md`](docs/01-hardware-setup.md) for wiring details.
 
@@ -66,7 +67,8 @@ Then follow the docs in order:
 
 - [x] Docs scaffolded
 - [x] Blink example (FreeRTOS task toggling onboard LED)
-- [ ] SWD debug probe wired and verified
+- [x] Debug Probe / SWD debugging documented (official probe, DIY probe, and direct-GPIO alternatives)
+- [ ] SWD debug probe wired and verified on actual hardware
 - [ ] Second example (queue/semaphore) added
 
 ## License

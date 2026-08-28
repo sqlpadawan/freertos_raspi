@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug (Picoprobe / SWD)",
+            "name": "Debug (Debug Probe / SWD)",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/src/blink.elf",
             "request": "launch",

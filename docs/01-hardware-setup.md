@@ -8,10 +8,11 @@
 | Raspberry Pi Pico or Pico 2 | The FreeRTOS target. Pico = RP2040, Pico 2 = RP2350 |
 | Micro-USB (Pico) or USB-C (Pico 2) cable | Power + flashing via UF2 bootloader |
 | microSD card / SSD for the Pi 5 | Raspberry Pi OS install media |
-| **Optional:** second Pico, or a Raspberry Pi Debug Probe | For SWD debugging (breakpoints, live variable inspection) |
-| **Optional:** 3x female-female jumper wires | For wiring SWD directly from Pi 5 GPIO to target Pico |
+| **Recommended:** [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/) | Official USB-to-SWD/UART dongle — plug-and-play SWD debugging |
+| **Alternative:** a second Pico | Can be flashed to act as a DIY debug probe (same firmware as above) |
+| **Alternative:** 3x female-female jumper wires | For wiring SWD directly from Pi 5 GPIO to target Pico, no probe hardware at all |
 
-## Two ways to get from Pi 5 → Pico
+## Three ways to get from Pi 5 → Pico
 
 ### Option A — USB only (start here)
 
@@ -23,17 +24,42 @@ Just plug the Pico into the Pi 5 via USB. This is enough to:
 No wiring required. This is the fastest path to a working "blink" project.
 See [06-flashing-uf2.md](06-flashing-uf2.md).
 
-### Option B — Add SWD for real debugging (recommended once blink works)
+### Option B — Debug Probe (recommended once blink works)
 
 To set breakpoints and step through FreeRTOS tasks in VS Code, you need an
-SWD connection. Two ways to do this, both fully supported by the Raspberry
-Pi Foundation tooling:
+SWD connection. The cleanest way to get one is the **official Raspberry Pi
+Debug Probe** — a small USB-C dongle that speaks CMSIS-DAP and needs no
+firmware flashing of its own.
 
-**B1. Second Pico as "Picoprobe"**
-Flash a spare Pico with the `debugprobe` firmware; it acts as a USB-to-SWD
-+ UART bridge. Wiring between the two Picos:
+It connects to the target Pico with its bundled 3-pin JST-SH cable:
 
-| Picoprobe (probe) | Target Pico | Signal |
+| Debug Probe cable pin | Target Pico pin | Signal |
+|---|---|---|
+| Pin 1 (yellow) | SWCLK (pin next to SWDIO, near BOOTSEL end) | Clock |
+| Pin 2 (black) | GND | Ground |
+| Pin 3 (orange) | SWDIO | Data |
+
+If your target Pico doesn't have a JST-SH debug connector broken out
+(original Pico doesn't; Pico 2 and Pico W/2 W boards vary), solder or clip
+onto the corresponding `SWCLK`/`GND`/`SWDIO` test points instead — see the
+[Pico datasheet](https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf)
+pinout diagram.
+
+A second JST-SH cable on the Debug Probe carries UART (target serial
+console) — connect it to the target's UART0 TX/RX/GND pins if you want a
+serial console independent of the USB CDC port.
+
+**No firmware to flash** — plug the Debug Probe into the Pi 5 via USB-C and
+it's immediately usable by OpenOCD. See
+[07-debugging-swd.md](07-debugging-swd.md) for the OpenOCD config and VS Code
+integration.
+
+**DIY alternative:** if you don't have the official probe, a spare Pico can
+be flashed with the same `debugprobe` firmware Raspberry Pi ships on the
+retail unit, making it electrically and functionally identical. Wiring
+between the two Picos:
+
+| DIY probe (spare Pico) | Target Pico | Signal |
 |---|---|---|
 | GP2 | SWCLK | Clock |
 | GP3 | SWDIO | Data |
@@ -41,10 +67,14 @@ Flash a spare Pico with the `debugprobe` firmware; it acts as a USB-to-SWD
 | GP4 (UART TX) | GP1 (UART RX) | Optional serial console |
 | GP5 (UART RX) | GP0 (UART TX) | Optional serial console |
 
-**B2. Direct from Raspberry Pi 5 GPIO (no second Pico needed)**
+Flashing instructions for the DIY probe are in
+[07-debugging-swd.md](07-debugging-swd.md#flashing-a-diy-probe-spare-pico-only).
+
+### Option C — Direct from Raspberry Pi 5 GPIO (no probe hardware at all)
+
 The Pi 5's GPIO header can bit-bang SWD directly via OpenOCD's `linuxgpiod`
-driver — since your host *is* a Raspberry Pi, you don't strictly need a
-separate probe.
+driver — since your host *is* a Raspberry Pi, you don't strictly need any
+separate probe, official or DIY.
 
 | Pi 5 GPIO (BCM) | Pin # | Target Pico |
 |---|---|---|
@@ -57,9 +87,11 @@ separate probe.
 > confirm against the current [Pico datasheet](https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf)
 > and your specific Pi 5 header revision before connecting power.
 
-Both options are documented in detail in
+All three options are documented in detail in
 [07-debugging-swd.md](07-debugging-swd.md) — you don't need to decide now.
-The blink example in this repo works over plain USB with no wiring at all.
+The blink example in this repo works over plain USB with no wiring at all,
+and the Debug Probe path (Option B) is the one this repo's default VS Code
+debug config targets.
 
 ## Board identification
 
