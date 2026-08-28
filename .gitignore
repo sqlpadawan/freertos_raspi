@@ -1,0 +1,18 @@
+# Build output
+build/
+*.elf
+*.uf2
+*.bin
+*.hex
+*.map
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+
+# Editor
+.vscode/ipch/
+*.code-workspace
+
+# OS cruft
+.DS_Store

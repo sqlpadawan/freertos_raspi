@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (Picoprobe / SWD)",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/src/blink.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "interface/cmsis-dap.cfg",
+                "target/rp2040.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "rtos": "FreeRTOS",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw"
+        },
+        {
+            "name": "Debug (Direct Pi GPIO / SWD)",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/src/blink.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "interface/linuxgpiod.cfg",
+                "target/rp2040.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "rtos": "FreeRTOS",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw"
+        }
+    ]
+}

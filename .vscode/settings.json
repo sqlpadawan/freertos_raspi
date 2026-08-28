@@ -1,0 +1,21 @@
+{
+    "cmake.configureOnOpen": true,
+    "cmake.generator": "Ninja",
+    "cmake.configureArgs": [
+        "-DPICO_BOARD=pico"
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}",
+        "${workspaceFolder}/lib/pico-sdk/src/**",
+        "${workspaceFolder}/lib/FreeRTOS-Kernel/include",
+        "${workspaceFolder}/lib/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include"
+    ],
+    "C_Cpp.default.defines": [
+        "PICO_BOARD=pico"
+    ],
+    "files.associations": {
+        "FreeRTOSConfig.h": "c",
+        "*.h": "c"
+    }
+}

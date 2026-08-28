@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "cmake --build ${workspaceFolder}/build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Configure (CMake)",
+            "type": "shell",
+            "command": "cmake -G Ninja -B ${workspaceFolder}/build ${workspaceFolder}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Flash (OpenOCD, SWD)",
+            "type": "shell",
+            "command": "openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c \"program ${workspaceFolder}/build/src/blink.elf verify reset exit\"",
+            "problemMatcher": [],
+            "detail": "Requires SWD wiring set up per docs/07-debugging-swd.md. Change interface/target cfg to match your wiring/board."
+        }
+    ]
+}
