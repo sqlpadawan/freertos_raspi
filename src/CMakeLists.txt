@@ -18,3 +18,18 @@ pico_enable_stdio_usb(blink 1)
 pico_enable_stdio_uart(blink 0)
 
 pico_add_extra_outputs(blink)
+
+# DIAGNOSTIC TARGET — bare-metal, no FreeRTOS. See src/blink_bare/main.c
+# and docs/09-troubleshooting.md for what this is for.
+add_executable(blink_bare
+    blink_bare/main.c
+)
+
+target_link_libraries(blink_bare
+    pico_stdlib
+)
+
+pico_enable_stdio_usb(blink_bare 1)
+pico_enable_stdio_uart(blink_bare 0)
+
+pico_add_extra_outputs(blink_bare)

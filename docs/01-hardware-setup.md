@@ -1,11 +1,19 @@
 # 01 — Hardware Setup
 
+> **This project targets plain (non-wireless) Pico / Pico 2 boards.** If
+> your board is a **Pico W** or **Pico 2 W** (has a wireless/Bluetooth
+> chip), the blink example's LED code won't work as-is — the onboard LED
+> on W boards is wired through the wireless chip, not a plain GPIO pin.
+> Everything else in this repo (build, flash, debug) still applies; see
+> [09-troubleshooting.md](09-troubleshooting.md#build-succeeds-but-board-does-nothing-after-flashing-led-not-blinking)
+> for what to change if you have a W board.
+
 ## What you need
 
 | Item | Notes |
 |---|---|
 | Raspberry Pi 5 | Host machine, running Raspberry Pi OS (64-bit recommended) |
-| Raspberry Pi Pico or Pico 2 | The FreeRTOS target. Pico = RP2040, Pico 2 = RP2350 |
+| Raspberry Pi Pico or Pico 2 (non-W) | The FreeRTOS target. Pico = RP2040, Pico 2 = RP2350 |
 | Micro-USB (Pico) or USB-C (Pico 2) cable | Power + flashing via UF2 bootloader |
 | microSD card / SSD for the Pi 5 | Raspberry Pi OS install media |
 | **Recommended:** [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/) | Official USB-to-SWD/UART dongle — plug-and-play SWD debugging |

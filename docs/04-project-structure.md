@@ -6,8 +6,10 @@
 ├── pico_sdk_import.cmake       # Standard shim that locates $PICO_SDK_PATH
 ├── FreeRTOSConfig.h            # RTOS kernel config (tick rate, heap size, etc.)
 ├── src/
-│   ├── CMakeLists.txt          # App-level target definition
-│   └── main.c                  # Blink example: one FreeRTOS task toggles the LED
+│   ├── CMakeLists.txt          # App-level target definitions
+│   ├── main.c                  # Blink example: one FreeRTOS task toggles the LED
+│   └── blink_bare/
+│       └── main.c              # Diagnostic target: same blink, no FreeRTOS (see docs/09-troubleshooting.md)
 ├── lib/                        # Git submodules (added on first setup)
 │   ├── pico-sdk/
 │   └── FreeRTOS-Kernel/
@@ -27,15 +29,17 @@
 Pico 2 instead of the original Pico:
 
 ```bash
-cmake -B build -DPICO_BOARD=pico2 ..
+cmake -B build -DPICO_BOARD=pico2 -G Ninja .
 ```
 
 Default is `pico` (original RP2040 board) if unspecified.
 
 ## Adding a new example
 
-This repo currently has one target (`blink`). To add another (e.g. a
-queue/semaphore demo):
+This repo currently has two targets: `blink` (the main FreeRTOS example)
+and `blink_bare` (a bare-metal, no-FreeRTOS diagnostic — see
+[09-troubleshooting.md](09-troubleshooting.md)). To add another FreeRTOS
+example (e.g. a queue/semaphore demo):
 
 1. Create `src/queue_demo/main.c`
 2. Add a matching `add_executable(...)` block in `src/CMakeLists.txt`

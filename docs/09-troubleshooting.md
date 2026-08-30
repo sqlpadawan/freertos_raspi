@@ -140,13 +140,110 @@ present the same USB IDs since they run the same firmware.
   it's unresponsive — a plain `kill` lets it release GPIO lines cleanly).
 - Confirm your user has GPIO access (`gpio` group) on Raspberry Pi OS.
 
-## Build succeeds but board does nothing after flashing
+## `CMake Error: PICO_PLATFORM is specified to be 'rp2040', but PICO_BOARD='pico2' ... incompatible`
 
-- Confirm `PICO_BOARD` in your CMake configure step matches your actual
-  hardware (`pico` vs `pico2`) — wrong board setting is the most common
-  cause of a "silent" flash.
-- Check serial output (see [06-flashing-uf2.md](06-flashing-uf2.md)) for a
-  crash/panic message before assuming it's a hardware fault.
+You switched `PICO_BOARD` (e.g. `pico` → `pico2`) without clearing the
+existing `build/` directory first. RP2040 and RP2350 are different chip
+platforms, and pico-sdk refuses to reconfigure an existing cache across
+that boundary rather than silently doing something wrong. Fix:
+
+```bash
+rm -rf build
+cmake -B build -DPICO_BOARD=pico2 -G Ninja .
+```
+
+See [05-building.md](05-building.md#switching-the-target-board-pico--pico-2)
+for the full explanation, including the separate-build-directory approach
+if you switch between boards often.
+
+## Build succeeds but board does nothing after flashing (LED not blinking)
+
+Work through these in order — each one narrows down where the problem is:
+
+1. **Confirm the UF2 copy actually completed.** When
+   `cp build/src/blink.uf2 /media/$USER/RPI-RP2/` succeeds, the Pico
+   automatically unmounts and reboots within a second or two. If the drive
+   is still sitting there mounted, the copy likely didn't finish — retry it.
+
+2. **Check serial output to see if the firmware is actually running:**
+   ```bash
+   ls /dev/ttyACM*
+   minicom -D /dev/ttyACM0 -b 115200
+   ```
+   If you see `LED ON` / `LED OFF` printing every 500ms, the firmware
+   **is** running correctly — the problem is isolated to the LED/GPIO
+   itself (go to step 4). If you see nothing at all, go to step 3.
+
+3. **Confirm `PICO_BOARD` matches your actual hardware:**
+   ```bash
+   grep PICO_BOARD build/CMakeCache.txt
+   ```
+   Flashing a `pico2` (RP2350) build onto an original Pico (RP2040), or
+   vice versa, produces a UF2 that won't run correctly on the wrong
+   silicon — no crash message, no LED, often no serial output either,
+   since it may not get far enough to initialize USB.
+
+4. **Do you have a Pico W or Pico 2 W (wireless variant)?** This is the
+   most common cause of "firmware runs fine, LED just never turns on."
+   On W boards, the onboard LED is **not** wired to a plain GPIO pin —
+   it's connected through the CYW43439 wireless chip, and needs the
+   `pico_cyw43_arch` library plus a small amount of extra init code to
+   control (`cyw43_arch_init()` + `cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, ...)`
+   instead of `gpio_put()`). This project's `main.c` and `CMakeLists.txt`
+   currently target plain (non-W) boards only and use the regular
+   `gpio_put(PICO_DEFAULT_LED_PIN, ...)` approach — on a W board the code
+   still builds and runs (you'll see the serial output in step 2), it just
+   silently can't reach the LED. Confirming this is your situation:
+   check the board's silkscreen / packaging for a "W" designation, or
+   look for the CYW43439 chip (small square IC with a small antenna
+   pattern nearby) — if you don't have a wireless variant, this doesn't
+   apply and you should keep looking elsewhere (loose LED, wrong board
+   revision, etc.).
+
+   If you do have a W board and want the LED working, you'll need to:
+   add `pico_cyw43_arch_lwip_threadsafe_background` (or the `_poll`
+   variant) to `target_link_libraries` in `src/CMakeLists.txt`, initialize
+   it with `cyw43_arch_init()` before use, and swap the `gpio_*` calls in
+   `src/main.c` for their `cyw43_arch_gpio_*` equivalents. This also pulls
+   in the `lib/cyw43-driver` and `lib/lwip` pico-sdk submodules that
+   [02-host-toolchain-setup.md](02-host-toolchain-setup.md) intentionally
+   skips fetching by default.
+
+5. **Device repeatedly fails to enumerate, then falls back to appearing as
+   the bootloader (`RP2350 Boot` / `RP2 Boot`) again** — check with
+   `dmesg | tail -40` right after plugging in. If you see repeated
+   `device descriptor read/64, error -110` and `attempt power cycle`
+   messages, followed by the device eventually re-appearing as the
+   bootloader's mass-storage device rather than your application, this is
+   the chip's own bootrom safety mechanism: your firmware is crashing or
+   resetting very early — before it can bring up USB — and after a few
+   failed attempts the bootrom falls back to presenting itself as a
+   bootloader again rather than getting stuck. This is a genuine firmware
+   problem, not something wrong with your flashing process, cable, or the
+   `PICO_BOARD` setting (those are all already covered above).
+
+   Before diving into SWD debugging, build and flash the diagnostic
+   **bare-metal blink** target included in this repo — plain pico-sdk,
+   no FreeRTOS at all:
+   ```bash
+   ninja -C build blink_bare
+   cp build/src/blink_bare.uf2 /media/$USER/RPI-RP2/
+   ```
+   (or `RP2350` if that's what your board's mass-storage volume is named).
+   Then repeat steps 1–2 above against this new binary.
+
+   - **If `blink_bare` blinks and prints fine** — the problem is isolated
+     to something in the FreeRTOS/RP2350 configuration specifically (not
+     the board, cable, toolchain, or base pico-sdk setup). At that point,
+     SWD debugging the *FreeRTOS* `blink` target (not `blink_bare`) with a
+     breakpoint at the top of `main()` in `src/main.c` is the most direct
+     way to see exactly where it stops — see
+     [07-debugging-swd.md](07-debugging-swd.md).
+   - **If `blink_bare` also fails the same way** — the problem is more
+     fundamental than FreeRTOS: something in the toolchain, the board
+     itself, or the wiring/power setup. Revisit steps 1–3 above with
+     fresh eyes, and consider trying a different USB cable/port if you
+     haven't already.
 
 ## Cortex-Debug shows no RTOS thread info
 
