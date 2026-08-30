@@ -8,7 +8,7 @@ CMake Error: PICO_SDK_PATH not found
 
 Run `source ~/.bashrc`, or re-run `scripts/setup-host.sh`, or check
 `echo $PICO_SDK_PATH`. If the repo was cloned to a different path than
-`~/pico-freertos-devsetup`, update the export lines in `~/.bashrc` manually.
+`~/pico-freertos`, update the export lines in `~/.bashrc` manually.
 
 ## Submodules empty (`lib/pico-sdk` has no files)
 
