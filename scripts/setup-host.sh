@@ -22,17 +22,21 @@ echo "==> [2/7] Fetching git submodules (pico-sdk, FreeRTOS-Kernel)"
 git submodule update --init --recursive
 
 echo "==> [3/7] Building Raspberry Pi fork of OpenOCD (with linuxgpiod support)"
-if command -v openocd >/dev/null 2>&1 && openocd --version 2>&1 | grep -qi "rp2040\|raspberrypi"; then
-    echo "    OpenOCD with RP2040 support already installed, skipping build."
+if command -v openocd >/dev/null 2>&1 && openocd --version 2>&1 | grep -qi "rp2040\|rp2350\|raspberrypi"; then
+    echo "    OpenOCD with RP2040/RP2350 support already installed, skipping build."
 else
+    # NOTE: Raspberry Pi's fork retired the old "rp2040" branch. The current
+    # default branch is "rpi-common" and supports both RP2040 and RP2350, so
+    # no --branch flag is needed. See docs/09-troubleshooting.md if this
+    # ever changes again upstream.
     if [ ! -d "$HOME/openocd-rpi-src" ]; then
-        git clone https://github.com/raspberrypi/openocd.git "$HOME/openocd-rpi-src" \
-            --branch rp2040 --depth=1
+        git clone https://github.com/raspberrypi/openocd.git "$HOME/openocd-rpi-src"
     fi
     (
         cd "$HOME/openocd-rpi-src"
+        git submodule update --init          # pulls in the jimtcl submodule
         ./bootstrap
-        ./configure --enable-linuxgpiod --enable-cmsis-dap
+        ./configure --enable-linuxgpiod --enable-cmsis-dap --enable-internal-jimtcl
         make -j"$(nproc)"
         sudo make install
     )

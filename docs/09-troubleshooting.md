@@ -26,6 +26,32 @@ sudo usermod -a -G dialout $USER
 
 Log out and back in (or reboot) for the group change to take effect.
 
+## OpenOCD build: `fatal: Remote branch rp2040 not found in upstream origin`
+
+Raspberry Pi's OpenOCD fork used to publish a branch named `rp2040`; that
+branch has since been retired. Their current default branch is
+`rpi-common` and supports both RP2040 and RP2350, so `setup-host.sh` now
+clones without specifying `--branch` at all (it just uses whatever the
+default branch is). If you hit this error, you're running an older copy
+of `setup-host.sh` — pull the latest version of this repo, or manually
+re-run the clone step without `--branch rp2040`:
+
+```bash
+rm -rf ~/openocd-rpi-src
+git clone https://github.com/raspberrypi/openocd.git ~/openocd-rpi-src
+cd ~/openocd-rpi-src
+git submodule update --init   # jimtcl
+./bootstrap
+./configure --enable-linuxgpiod --enable-cmsis-dap --enable-internal-jimtcl
+make -j$(nproc)
+sudo make install
+```
+
+> ⚠️ **WARNING — irreversible:** `rm -rf ~/openocd-rpi-src` deletes a
+> previous (possibly partial) clone of the OpenOCD source tree. This is
+> safe — it's just a scratch clone, not anything you authored — but as
+> always, double check the path before running `rm -rf` with a fresh eye.
+
 ## OpenOCD: "Error: unable to open CMSIS-DAP device"
 
 Applies to both the official Debug Probe and a DIY spare-Pico probe — they
