@@ -32,7 +32,7 @@ See [`docs/01-hardware-setup.md`](docs/01-hardware-setup.md) for wiring details.
 
 ```bash
 git clone --recurse-submodules <this-repo-url>
-cd pico-freertos
+cd freertos_raspi
 ./scripts/setup-host.sh          # installs toolchain, SDKs, VS Code (if needed), and extensions
 code .                           # open in VS Code
 ```

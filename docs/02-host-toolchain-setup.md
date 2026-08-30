@@ -62,8 +62,8 @@ The build needs `PICO_SDK_PATH` and `FREERTOS_KERNEL_PATH`. `setup-host.sh`
 appends these to `~/.bashrc`:
 
 ```bash
-export PICO_SDK_PATH="$HOME/pico-freertos/lib/pico-sdk"
-export FREERTOS_KERNEL_PATH="$HOME/pico-freertos/lib/FreeRTOS-Kernel"
+export PICO_SDK_PATH="$HOME/freertos_raspi/lib/pico-sdk"
+export FREERTOS_KERNEL_PATH="$HOME/freertos_raspi/lib/FreeRTOS-Kernel"
 ```
 
 Restart your terminal (or `source ~/.bashrc`) after running the script.
