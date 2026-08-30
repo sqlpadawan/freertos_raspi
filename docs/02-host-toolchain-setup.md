@@ -16,6 +16,7 @@ This doc explains what that script does and why, so the setup isn't a black box.
 | `openocd` (built from source, see below) | On-target flashing/debugging via SWD |
 | `gdb-multiarch` | Source-level debugging from VS Code |
 | `minicom` or `screen` | Optional: manual serial console access |
+| `code` (VS Code) | The IDE itself — installed automatically if not already present |
 
 ## Why OpenOCD is built from source
 
@@ -79,6 +80,22 @@ echo $FREERTOS_KERNEL_PATH
 
 All five should print sensible output with no errors. If any are blank or
 missing, see [09-troubleshooting.md](09-troubleshooting.md).
+
+## Installing VS Code
+
+`setup-host.sh` installs VS Code automatically if the `code` command isn't
+already on your PATH. Raspberry Pi OS (Bookworm and later) ships VS Code
+directly in its own apt repos for arm64/armhf, so this is normally just:
+
+```bash
+sudo apt-get install -y code
+```
+
+If that package isn't available (older Raspberry Pi OS release, or a
+non-standard image), the script falls back to adding Microsoft's official
+apt repo and installing from there instead — no manual steps needed either
+way. You only need to install VS Code yourself if you're running the docs
+on a machine where `setup-host.sh` hasn't been run.
 
 ## Running the setup script
 

@@ -10,7 +10,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-echo "==> [1/6] Installing apt packages"
+echo "==> [1/7] Installing apt packages"
 sudo apt-get update
 sudo apt-get install -y \
     cmake ninja-build gcc-arm-none-eabi libnewlib-arm-none-eabi \
@@ -18,10 +18,10 @@ sudo apt-get install -y \
     libusb-1.0-0-dev libhidapi-dev libgpiod-dev pkg-config autoconf \
     libtool texinfo
 
-echo "==> [2/6] Fetching git submodules (pico-sdk, FreeRTOS-Kernel)"
+echo "==> [2/7] Fetching git submodules (pico-sdk, FreeRTOS-Kernel)"
 git submodule update --init --recursive
 
-echo "==> [3/6] Building Raspberry Pi fork of OpenOCD (with linuxgpiod support)"
+echo "==> [3/7] Building Raspberry Pi fork of OpenOCD (with linuxgpiod support)"
 if command -v openocd >/dev/null 2>&1 && openocd --version 2>&1 | grep -qi "rp2040\|raspberrypi"; then
     echo "    OpenOCD with RP2040 support already installed, skipping build."
 else
@@ -38,7 +38,7 @@ else
     )
 fi
 
-echo "==> [4/6] Setting environment variables in ~/.bashrc"
+echo "==> [4/7] Setting environment variables in ~/.bashrc"
 BASHRC="$HOME/.bashrc"
 add_export_once() {
     local line="$1"
@@ -52,17 +52,39 @@ add_export_once() {
 add_export_once "export PICO_SDK_PATH=\"$REPO_ROOT/lib/pico-sdk\""
 add_export_once "export FREERTOS_KERNEL_PATH=\"$REPO_ROOT/lib/FreeRTOS-Kernel\""
 
-echo "==> [5/6] Adding user to dialout/gpio groups (for serial + GPIO access)"
+echo "==> [5/7] Adding user to dialout/gpio groups (for serial + GPIO access)"
 sudo usermod -a -G dialout,gpio "$USER" || true
 
-echo "==> [6/6] Installing VS Code extensions (skipped if 'code' CLI not found)"
+echo "==> [6/7] Installing VS Code (if not already installed)"
+if command -v code >/dev/null 2>&1; then
+    echo "    VS Code already installed, skipping."
+else
+    # Raspberry Pi OS (Bookworm and later) ships VS Code directly in its own
+    # apt repos for arm64/armhf, so no need to add Microsoft's repo manually.
+    # See: https://www.raspberrypi.com/news/coding-on-raspberry-pi-with-visual-studio-code/
+    if sudo apt-get install -y code; then
+        echo "    Installed VS Code from Raspberry Pi OS apt repo."
+    else
+        echo "    'code' not found in apt repos on this OS/arch."
+        echo "    Falling back to Microsoft's apt repo..."
+        sudo apt-get install -y wget gpg apt-transport-https
+        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/packages.microsoft.gpg
+        sudo install -D -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | \
+            sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+        sudo apt-get update
+        sudo apt-get install -y code
+    fi
+fi
+
+echo "==> [7/7] Installing VS Code extensions"
 if command -v code >/dev/null 2>&1; then
     code --install-extension raspberry-pi.raspberry-pi-pico || true
     code --install-extension ms-vscode.cpptools || true
     code --install-extension ms-vscode.cmake-tools || true
     code --install-extension marus25.cortex-debug || true
 else
-    echo "    'code' CLI not found — install extensions manually, see docs/03-vscode-setup.md"
+    echo "    'code' CLI still not found — install VS Code manually, see docs/03-vscode-setup.md"
 fi
 
 cat <<'EOF'

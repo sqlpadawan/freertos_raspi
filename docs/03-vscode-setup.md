@@ -1,5 +1,10 @@
 # 03 — VS Code Setup
 
+> VS Code itself is installed automatically by
+> [`scripts/setup-host.sh`](../scripts/setup-host.sh) if it isn't already
+> present — see [02-host-toolchain-setup.md](02-host-toolchain-setup.md#installing-vs-code).
+> This doc covers configuring it once it's installed.
+
 ## Extensions
 
 Installed automatically via `.vscode/extensions.json` recommendations
