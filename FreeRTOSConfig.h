@@ -5,20 +5,19 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-uint32_t SystemCoreClock;
-#ifdef __cplusplus
-}
-#endif
+/* NOTE: Do NOT declare `uint32_t SystemCoreClock;` here. pico-sdk's CMSIS
+ * stub (src/rp2_common/cmsis/stub/CMSIS/Device/RP2040/Source/system_RP2040.c)
+ * already defines this global. Redeclaring it here as a second definition
+ * causes a "multiple definition of `SystemCoreClock'" link error, since
+ * FreeRTOSConfig.h is pulled into many translation units across both
+ * pico-sdk and the FreeRTOS kernel. */
 
 #define configUSE_PREEMPTION                    1
 #define configUSE_TICKLESS_IDLE                  0
 #define configCPU_CLOCK_HZ                       133000000UL
 #define configTICK_RATE_HZ                       1000
 #define configMAX_PRIORITIES                     5
-#define configMINIMAL_STACK_SIZE                 configMINIMAL_STACK_SIZE
+#define configMINIMAL_STACK_SIZE                 128
 #define configMAX_TASK_NAME_LEN                  16
 #define configUSE_16_BIT_TICKS                   0
 #define configIDLE_SHOULD_YIELD                  1
@@ -31,7 +30,7 @@ uint32_t SystemCoreClock;
 #define configUSE_TIME_SLICING                   1
 #define configUSE_NEWLIB_REENTRANT                0
 
-#define configSUPPORT_STATIC_ALLOCATION           1
+#define configSUPPORT_STATIC_ALLOCATION            0
 #define configSUPPORT_DYNAMIC_ALLOCATION          1
 #define configTOTAL_HEAP_SIZE                     (128 * 1024)
 #define configAPPLICATION_ALLOCATED_HEAP           0
@@ -53,6 +52,14 @@ uint32_t SystemCoreClock;
 #define configRUN_MULTIPLE_PRIORITIES              0
 #define configUSE_CORE_AFFINITY                    0
 
+/* Required by the RP2350 (Pico 2) Cortex-M33 port only; harmless/unused on
+ * RP2040 (original Pico), but must be defined either way since the port
+ * headers #error out if these are missing when building for RP2350. */
+#define configENABLE_FPU                          1
+#define configENABLE_MPU                          0
+#define configENABLE_TRUSTZONE                     0
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY        (5 << 5)  /* RP2350/Cortex-M33 only */
+
 /* Optional API inclusions */
 #define INCLUDE_vTaskPrioritySet                  1
 #define INCLUDE_uxTaskPriorityGet                 1
@@ -64,6 +71,7 @@ uint32_t SystemCoreClock;
 #define INCLUDE_xTaskGetCurrentTaskHandle           1
 #define INCLUDE_uxTaskGetStackHighWaterMark         1
 #define INCLUDE_eTaskGetState                      1
+#define INCLUDE_xTimerPendFunctionCall              1
 
 /* Assert used by the kernel port; SDK's panic() halts and prints via stdio. */
 void vAssertCalled(const char *file, int line);

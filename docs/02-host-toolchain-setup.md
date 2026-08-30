@@ -34,27 +34,55 @@ repo version is often too old. `setup-host.sh` clones and builds
 | `lib/FreeRTOS-Kernel` | `raspberrypi/FreeRTOS-Kernel` (RP2040/RP2350 port) | The RTOS itself |
 
 These are added as git submodules rather than vendored so they can be
-version-pinned and updated independently. `.gitmodules` in this repo already
-declares both, but since this scaffold wasn't cloned from a live GitHub repo
-yet, you need to actually register them once, from the repo root, after your
-first `git init`/push:
+version-pinned and updated independently. They're already registered and
+pinned to specific tested commits in this repo:
+
+- `lib/pico-sdk` → tag `2.3.0`
+- `lib/FreeRTOS-Kernel` → `main` branch, a commit confirmed to build cleanly
+  against that pico-sdk version for both RP2040 and RP2350
+
+You don't need to run `git submodule add` yourself — that's already done.
+After cloning, fetch the top-level submodules and the one nested submodule
+this project actually needs:
 
 ```bash
-git submodule add https://github.com/raspberrypi/pico-sdk.git lib/pico-sdk
-git submodule add https://github.com/raspberrypi/FreeRTOS-Kernel.git lib/FreeRTOS-Kernel
-git submodule update --init --recursive
-git add .gitmodules lib
-git commit -m "Pin pico-sdk and FreeRTOS-Kernel submodules"
+git clone <this-repo-url>
+cd freertos_raspi
+git submodule update --init                      # pico-sdk, FreeRTOS-Kernel
+git -C lib/pico-sdk submodule update --init lib/tinyusb
 ```
 
-After that, anyone (including future-you, after a reset) just needs:
+`setup-host.sh` runs both of these for you automatically — this is what to
+do if you're setting things up by hand instead, or need to re-fetch after
+a reset.
+
+**Don't use `git clone --recurse-submodules` or
+`git submodule update --init --recursive`** — both pull in *every* nested
+submodule of `pico-sdk`, including `lib/cyw43-driver`, `lib/lwip`,
+`lib/mbedtls`, and `lib/btstack`. Those are only needed for Pico W
+wireless/Bluetooth features, are large, and aren't used by the blink
+example — the commands above fetch only what this project actually
+builds with. If you later need Pico W wireless features, initialize the
+specific submodule you need:
 
 ```bash
-git clone --recurse-submodules <this-repo-url>
+cd lib/pico-sdk
+git submodule update --init lib/cyw43-driver   # example
 ```
 
-`setup-host.sh` also runs `git submodule update --init --recursive` for you
-on subsequent resets, once the submodules are registered.
+If you ever want to bump either submodule to a newer upstream commit:
+
+```bash
+cd lib/pico-sdk        # or lib/FreeRTOS-Kernel
+git fetch
+git checkout <new-tag-or-commit>
+cd ../..
+git add lib/pico-sdk
+git commit -m "Bump pico-sdk to <version>"
+```
+
+`setup-host.sh` also runs both fetch commands for you automatically on
+subsequent resets.
 
 ## Environment variables
 

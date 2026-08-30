@@ -1,6 +1,7 @@
 {
     "cmake.configureOnOpen": true,
     "cmake.generator": "Ninja",
+    "cmake.buildDirectory": "${workspaceFolder}/build",
     "cmake.configureArgs": [
         "-DPICO_BOARD=pico"
     ],

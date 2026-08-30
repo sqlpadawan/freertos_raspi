@@ -13,8 +13,13 @@ Run `source ~/.bashrc`, or re-run `scripts/setup-host.sh`, or check
 ## Submodules empty (`lib/pico-sdk` has no files)
 
 ```bash
-git submodule update --init --recursive
+git submodule update --init
+git -C lib/pico-sdk submodule update --init lib/tinyusb
 ```
+
+Don't use `--recursive` here — see
+[02-host-toolchain-setup.md](02-host-toolchain-setup.md) for why (it pulls
+in several large, unused Pico W submodules).
 
 ## Permission denied on `/dev/ttyACM0`
 
@@ -25,6 +30,60 @@ sudo usermod -a -G dialout $USER
 ```
 
 Log out and back in (or reboot) for the group change to take effect.
+
+## `code --install-extension` fails with "Extension ... not found"
+
+The extension ID this repo uses (`raspberry-pi.raspberry-pi-pico`) is
+correct — verified against the official marketplace listing. If you hit
+"not found" anyway, it's almost always a transient marketplace lookup
+issue (network hiccup, DNS, or a rate limit), not a wrong ID. The `|| true`
+after each install line in `setup-host.sh` means this doesn't abort the
+rest of the script — you'll still see "Setup complete." even if one
+extension failed.
+
+To resolve:
+
+1. `code --version` — confirm VS Code itself is actually working.
+2. `curl -I https://marketplace.visualstudio.com` — confirm the Pi can
+   reach the marketplace. If this fails, fix connectivity/DNS first.
+3. Just retry: `code --install-extension raspberry-pi.raspberry-pi-pico`
+4. If the CLI keeps failing, try the GUI instead — Extensions panel
+   (`Ctrl+Shift+X`) → search "Raspberry Pi Pico" — it sometimes succeeds
+   when the CLI's gallery query doesn't.
+5. Last resort: download the latest `.vsix` from the
+   [pico-vscode releases page](https://github.com/raspberrypi/pico-vscode/releases)
+   and install via `Ctrl+Shift+P` → "Extensions: Install from VSIX...".
+
+## "You are trying to start Visual Studio Code as a super user"
+
+This happens if `setup-host.sh` was invoked with `sudo` (e.g.
+`sudo ./scripts/setup-host.sh`), which makes every command in the script —
+including the `code --install-extension` calls at the end — inherit root
+privileges. VS Code refuses to run as root and prints this warning
+repeatedly instead of installing the extensions.
+
+The script now guards against this and exits immediately with an error if
+run as root. If you hit the warning, you're on an older copy — pull the
+latest version of this repo, then re-run **without** `sudo`:
+
+```bash
+./scripts/setup-host.sh
+```
+
+The script escalates internally (via inline `sudo`) only for the specific
+steps that actually need root — `apt-get`, `usermod`, and `make install`
+for OpenOCD — so running it as your normal user is correct and expected;
+you'll just get a password prompt at those specific points.
+
+If extensions failed to install because of this, install them manually
+once VS Code is present:
+
+```bash
+code --install-extension raspberry-pi.raspberry-pi-pico
+code --install-extension ms-vscode.cpptools
+code --install-extension ms-vscode.cmake-tools
+code --install-extension marus25.cortex-debug
+```
 
 ## OpenOCD build: `fatal: Remote branch rp2040 not found in upstream origin`
 

@@ -31,9 +31,9 @@ See [`docs/01-hardware-setup.md`](docs/01-hardware-setup.md) for wiring details.
 ## Quick start
 
 ```bash
-git clone --recurse-submodules <this-repo-url>
+git clone <this-repo-url>
 cd freertos_raspi
-./scripts/setup-host.sh          # installs toolchain, SDKs, VS Code (if needed), and extensions
+./scripts/setup-host.sh          # do NOT run with sudo — it fetches submodules, installs the toolchain, and escalates internally where needed
 code .                           # open in VS Code
 ```
 

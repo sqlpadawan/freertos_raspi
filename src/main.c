@@ -37,6 +37,21 @@ void vAssertCalled(const char *file, int line) {
     for (;;) {}
 }
 
+/* Required because configUSE_MALLOC_FAILED_HOOK == 1 in FreeRTOSConfig.h */
+void vApplicationMallocFailedHook(void) {
+    printf("MALLOC FAILED - out of FreeRTOS heap (see configTOTAL_HEAP_SIZE)\n");
+    taskDISABLE_INTERRUPTS();
+    for (;;) {}
+}
+
+/* Required because configCHECK_FOR_STACK_OVERFLOW == 2 in FreeRTOSConfig.h */
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
+    (void)xTask;
+    printf("STACK OVERFLOW in task: %s\n", pcTaskName);
+    taskDISABLE_INTERRUPTS();
+    for (;;) {}
+}
+
 int main(void) {
     stdio_init_all();
 

@@ -7,6 +7,19 @@
 
 set -euo pipefail
 
+if [ "$(id -u)" -eq 0 ]; then
+    echo "ERROR: Don't run this script with sudo / as root." >&2
+    echo "It escalates internally (via sudo) only for the specific steps" >&2
+    echo "that need it (apt, usermod, make install). Running the whole" >&2
+    echo "script as root causes problems later — e.g. VS Code refuses to" >&2
+    echo "run as root and prints 'trying to start Visual Studio Code as a" >&2
+    echo "super user' warnings when the script tries to install extensions." >&2
+    echo "" >&2
+    echo "Re-run as your normal user instead:" >&2
+    echo "    ./scripts/setup-host.sh" >&2
+    exit 1
+fi
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
@@ -19,7 +32,13 @@ sudo apt-get install -y \
     libtool texinfo
 
 echo "==> [2/7] Fetching git submodules (pico-sdk, FreeRTOS-Kernel)"
-git submodule update --init --recursive
+# NOTE: intentionally NOT using --recursive here. pico-sdk has several of
+# its own nested submodules (cyw43-driver, lwip, mbedtls, btstack) that are
+# only needed for Pico W wireless/Bluetooth features and are large. We only
+# need pico-sdk's tinyusb submodule for USB stdio (printf), so fetch that
+# one specifically instead. See docs/02-host-toolchain-setup.md.
+git submodule update --init
+git -C lib/pico-sdk submodule update --init lib/tinyusb
 
 echo "==> [3/7] Building Raspberry Pi fork of OpenOCD (with linuxgpiod support)"
 if command -v openocd >/dev/null 2>&1 && openocd --version 2>&1 | grep -qi "rp2040\|rp2350\|raspberrypi"; then
