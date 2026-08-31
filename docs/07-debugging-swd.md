@@ -67,17 +67,28 @@ before touching wiring again.
 
 ## VS Code integration
 
-`.vscode/launch.json` in this repo already defines two configurations —
-pick whichever matches your wiring in the "Run and Debug" dropdown:
+`.vscode/launch.json` in this repo defines four configurations — pick
+whichever matches your **board and wiring** in the "Run and Debug"
+dropdown:
 
-- **"Debug (Debug Probe / SWD)"** — for the official Debug Probe or a
-  DIY spare-Pico probe (both use `cmsis-dap.cfg`)
-- **"Debug (Direct Pi GPIO / SWD)"** — for Option C wiring
+- **"Debug Pico (RP2040) — Debug Probe / SWD"** — original Pico, official
+  Debug Probe or DIY spare-Pico probe (both use `cmsis-dap.cfg`)
+- **"Debug Pico 2 (RP2350) — Debug Probe / SWD"** — Pico 2, same probe options
+- **"Debug Pico (RP2040) — Direct Pi GPIO / SWD"** — original Pico, Option C wiring
+- **"Debug Pico 2 (RP2350) — Direct Pi GPIO / SWD"** — Pico 2, Option C wiring
+
+Picking the wrong board's configuration won't necessarily fail loudly —
+OpenOCD may still connect, since both chips implement standard SWD, but
+target-specific operations (like the RTOS-awareness the Cortex-Debug
+integration relies on) can behave oddly if the target config doesn't
+match the actual silicon. Match this to whichever board you're building
+for (see [05-building.md](05-building.md#switching-the-target-board-pico--pico-2)
+if you're not sure which is currently configured).
 
 Steps:
 
 1. Set a breakpoint in `src/main.c` (e.g. inside the blink task's loop)
-2. `Run and Debug` → select the configured launch target
+2. `Run and Debug` → select the configuration matching your board and wiring
 3. Execution should halt at the breakpoint, with FreeRTOS task state
    visible in the Cortex-Debug "RTOS Threads" panel
 

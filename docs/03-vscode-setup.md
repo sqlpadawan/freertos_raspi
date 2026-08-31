@@ -62,8 +62,8 @@ change boards (`PICO_BOARD`) or delete the `build/` folder.
 | Action | How |
 |---|---|
 | **Build** | `Ctrl+Shift+B` — runs this repo's "Build" task (`cmake --build build`) |
-| **Flash via SWD** | Command Palette → `Tasks: Run Task` → **"Flash (OpenOCD, SWD)"** |
-| **Debug** | Open the "Run and Debug" panel (`Ctrl+Shift+D`), pick a launch config from the dropdown at the top ("Debug (Debug Probe / SWD)" or "Debug (Direct Pi GPIO / SWD)"), press the green ▶ |
+| **Flash via SWD** | Command Palette → `Tasks: Run Task` → **"Flash Pico (RP2040) via OpenOCD/SWD"** or **"Flash Pico 2 (RP2350) via OpenOCD/SWD"**, matching your board |
+| **Debug** | Open the "Run and Debug" panel (`Ctrl+Shift+D`), pick the launch config matching your board and wiring from the dropdown at the top (e.g. "Debug Pico 2 (RP2350) — Debug Probe / SWD"), press the green ▶ |
 | **Flash via UF2 (no probe)** | Not a VS Code action — see [06-flashing-uf2.md](06-flashing-uf2.md), it's just copying a file |
 
 You do **not** need to use the CMake Tools status-bar buttons (the ones
@@ -109,7 +109,8 @@ UI for this repo specifically.
   fixed `build/` directory, and tells C/C++ IntelliSense where to find
   the Pico SDK and FreeRTOS headers so autocomplete works across both.
 - **`tasks.json`** — defines the "Build" task (bound to `Ctrl+Shift+B`)
-  and the "Flash (OpenOCD, SWD)" task described above.
+  and the two board-specific "Flash ... via OpenOCD/SWD" tasks described
+  above.
 - **`launch.json`** — the two Cortex-Debug configurations for the two SWD
   wiring options, see [07-debugging-swd.md](07-debugging-swd.md).
 - **`extensions.json`** — the recommendation list from step 2 above.

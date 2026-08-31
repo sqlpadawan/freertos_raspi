@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug (Debug Probe / SWD)",
+            "name": "Debug Pico (RP2040) — Debug Probe / SWD",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/src/blink.elf",
             "request": "launch",
@@ -18,7 +18,23 @@
             "showDevDebugOutput": "raw"
         },
         {
-            "name": "Debug (Direct Pi GPIO / SWD)",
+            "name": "Debug Pico 2 (RP2350) — Debug Probe / SWD",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/src/blink.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "interface/cmsis-dap.cfg",
+                "target/rp2350.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "rtos": "FreeRTOS",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw"
+        },
+        {
+            "name": "Debug Pico (RP2040) — Direct Pi GPIO / SWD",
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/src/blink.elf",
             "request": "launch",
@@ -27,6 +43,22 @@
             "configFiles": [
                 "interface/linuxgpiod.cfg",
                 "target/rp2040.cfg"
+            ],
+            "gdbPath": "gdb-multiarch",
+            "rtos": "FreeRTOS",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "raw"
+        },
+        {
+            "name": "Debug Pico 2 (RP2350) — Direct Pi GPIO / SWD",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/src/blink.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "configFiles": [
+                "interface/linuxgpiod.cfg",
+                "target/rp2350.cfg"
             ],
             "gdbPath": "gdb-multiarch",
             "rtos": "FreeRTOS",

@@ -1,5 +1,23 @@
 # 09 — Troubleshooting
 
+## `pico/stdlib.h: No such file or directory` when pressing an inline ▷ button
+
+If this happens the moment you press a small ▷ (play) icon docked directly
+above an open source file's tab — not the Run and Debug side panel — you
+likely triggered **CMake Tools' own inline Run/Debug button**, which is a
+separate feature from this project's actual debug setup. It builds and
+runs using whatever kit CMake Tools currently has selected, and if that's
+reverted to your Pi's native `gcc` instead of the `arm-none-eabi` kit
+(easy to happen after a kit rescan or reopening the folder), the compile
+fails immediately on the first pico-sdk header it hits, since native gcc
+has no reason to know where `pico/stdlib.h` lives.
+
+Fix: re-run `CMake: Select a Kit` from the Command Palette and confirm
+the `arm-none-eabi` one is selected, then use the **Run and Debug side
+panel** (`Ctrl+Shift+D`) and pick the correct launch configuration from
+its dropdown instead of the inline button — see
+[03-vscode-setup.md](03-vscode-setup.md#everyday-workflow-after-first-time-setup).
+
 ## `PICO_SDK_PATH` / `FREERTOS_KERNEL_PATH` not set
 
 ```
