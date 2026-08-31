@@ -9,6 +9,15 @@ This repo is designed to be cloned onto a fresh Raspberry Pi OS install and
 bring you from "blank SD card" to "blinking LED under FreeRTOS, with
 breakpoint debugging" by following the docs in order.
 
+> **Known issue:** on a **Pico 2 (RP2350)**, the FreeRTOS blink example
+> currently hangs and never brings up USB serial — this is a known,
+> currently-unresolved upstream issue with FreeRTOS + USB CDC on RP2350,
+> not something specific to this repo's setup. The original **Pico
+> (RP2040)** is not affected. See
+> [docs/10-known-issue-rp2350-freertos-usb.md](docs/10-known-issue-rp2350-freertos-usb.md)
+> for the full writeup before spending time debugging this yourself on a
+> Pico 2.
+
 ## Why this repo exists
 
 Every step of the host setup, toolchain install, VS Code configuration, and
@@ -48,6 +57,7 @@ Then follow the docs in order:
 7. [Debugging (SWD)](docs/07-debugging-swd.md)
 8. [FreeRTOS configuration](docs/08-freertos-config.md)
 9. [Troubleshooting](docs/09-troubleshooting.md)
+10. [Known issue: FreeRTOS + USB on Pico 2](docs/10-known-issue-rp2350-freertos-usb.md)
 
 ## Repo layout
 
@@ -65,10 +75,25 @@ Then follow the docs in order:
 
 ## Status
 
+Verified on **real Pico 2 (RP2350) hardware**:
 - [x] Docs scaffolded
-- [x] Blink example (FreeRTOS task toggling onboard LED)
-- [x] Debug Probe / SWD debugging documented (official probe, DIY probe, and direct-GPIO alternatives)
-- [ ] SWD debug probe wired and verified on actual hardware
+- [x] `blink` (FreeRTOS) and `blink_bare` (no RTOS) both build cleanly
+- [x] UF2 flashing
+- [x] `blink_bare` — LED blinks, USB serial prints correctly
+- [x] Debug Probe / SWD connection (OpenOCD connects cleanly, both
+      Cortex-M33 cores detected)
+- [ ] `blink` (FreeRTOS) — **known issue**, hangs before USB comes up; see
+      [docs/10-known-issue-rp2350-freertos-usb.md](docs/10-known-issue-rp2350-freertos-usb.md)
+
+Not yet verified on **real Pico (RP2040) hardware** (build-only, in a
+sandbox with no physical board) — expected to work based on the FreeRTOS
+RP2040 port being mature and widely used, but not yet confirmed
+end-to-end on this project specifically:
+- [ ] UF2 flashing
+- [ ] `blink` (FreeRTOS) — LED + USB serial
+- [ ] Debug Probe / SWD connection
+
+Other:
 - [ ] Second example (queue/semaphore) added
 
 ## License

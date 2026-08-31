@@ -65,6 +65,37 @@ Info : rp2040.core0: hardware has 4 breakpoints, 2 watchpoints
 If it hangs or errors out, see [09-troubleshooting.md](09-troubleshooting.md)
 before touching wiring again.
 
+## Connecting GDB manually: a `vMustReplyEmpty` compatibility quirk
+
+If you connect GDB to OpenOCD by hand (`gdb-multiarch your.elf` then
+`target remote localhost:3333`), you may hit:
+
+```
+Remote replied unexpectedly to 'vMustReplyEmpty': vCont;c;C;s;S
+```
+
+This is a long-documented compatibility quirk between modern GDB versions
+and OpenOCD's gdbserver implementation (OpenOCD's `qSupported` response
+includes a nonstandard `"timeout"` item that confuses GDB's next
+handshake step) — it's not specific to this project, this board, or your
+setup, and shows up across many different targets (STM32, ESP32, RISC-V)
+in public bug trackers going back years.
+
+**What we confirmed works, manually, outside VS Code:** using ARM's
+official toolchain's `arm-none-eabi-gdb` (not Debian's `gdb-multiarch`)
+together with `target extended-remote` instead of `target remote`.
+
+**What's still unconfirmed:** whether this fully resolves the issue
+*inside VS Code's Cortex-Debug integration* — Cortex-Debug already
+connects via `extended-remote` internally, and an early attempt through
+VS Code hit this same error (though at the time, `launch.json` also had
+the wrong `target/rp2350.cfg` value, confounding that result). If you hit
+this through VS Code specifically, try changing `gdbPath` in
+`launch.json` from `gdb-multiarch` to the full path of ARM's
+`arm-none-eabi-gdb` (see [02-host-toolchain-setup.md](02-host-toolchain-setup.md)
+if you need to install it) and retest — this is a reasonable next step,
+not a verified fix.
+
 ## VS Code integration
 
 `.vscode/launch.json` in this repo defines four configurations — pick

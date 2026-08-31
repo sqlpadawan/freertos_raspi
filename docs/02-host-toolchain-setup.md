@@ -125,6 +125,31 @@ apt repo and installing from there instead — no manual steps needed either
 way. You only need to install VS Code yourself if you're running the docs
 on a machine where `setup-host.sh` hasn't been run.
 
+## Optional: ARM's official toolchain (for a GDB compatibility issue)
+
+`setup-host.sh` installs `gdb-multiarch` for debugging, which works for
+most people. If you hit a `vMustReplyEmpty` error connecting GDB to
+OpenOCD (see [07-debugging-swd.md](07-debugging-swd.md#connecting-gdb-manually-a-vmustreplyempty-compatibility-quirk)),
+one thing that helped in testing was switching to ARM's own official
+prebuilt toolchain instead of Debian's `gdb-multiarch` package — this
+isn't part of the default setup since it's only needed if you hit that
+specific issue:
+
+```bash
+cd ~
+wget https://developer.arm.com/-/media/Files/downloads/gnu/15.2.rel1/binrel/arm-gnu-toolchain-15.2.rel1-aarch64-arm-none-eabi.tar.xz
+tar xJf arm-gnu-toolchain-15.2.rel1-aarch64-arm-none-eabi.tar.xz -C ~
+```
+
+This gives you `~/arm-gnu-toolchain-15.2.rel1-aarch64-arm-none-eabi/bin/arm-none-eabi-gdb`,
+a separately-built GDB distinct from Debian's `gdb-multiarch` (which is
+the only option Debian ships now — `gdb-arm-none-eabi` was a separate
+package in older Debian releases but has since been merged into
+`gdb-multiarch`, so it's no longer installable on its own via `apt`).
+
+To use it in VS Code, update `gdbPath` in `.vscode/launch.json` to the
+full path of this binary.
+
 ## Running the setup script
 
 ```bash

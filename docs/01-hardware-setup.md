@@ -8,6 +8,13 @@
 > [09-troubleshooting.md](09-troubleshooting.md#build-succeeds-but-board-does-nothing-after-flashing-led-not-blinking)
 > for what to change if you have a W board.
 
+> **If you're choosing between a Pico and a Pico 2 for this project:**
+> the FreeRTOS example currently has a known, unresolved issue on **Pico 2
+> (RP2350)** — it hangs and never brings up USB serial. The original
+> **Pico (RP2040)** does not have this issue. See
+> [10-known-issue-rp2350-freertos-usb.md](10-known-issue-rp2350-freertos-usb.md)
+> before picking a Pico 2 if avoiding this is a priority for you right now.
+
 ## What you need
 
 | Item | Notes |

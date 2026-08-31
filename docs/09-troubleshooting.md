@@ -252,10 +252,13 @@ Work through these in order — each one narrows down where the problem is:
 
    - **If `blink_bare` blinks and prints fine** — the problem is isolated
      to something in the FreeRTOS/RP2350 configuration specifically (not
-     the board, cable, toolchain, or base pico-sdk setup). At that point,
-     SWD debugging the *FreeRTOS* `blink` target (not `blink_bare`) with a
-     breakpoint at the top of `main()` in `src/main.c` is the most direct
-     way to see exactly where it stops — see
+     the board, cable, toolchain, or base pico-sdk setup). **This is a
+     known, currently-unresolved issue** — see
+     [10-known-issue-rp2350-freertos-usb.md](10-known-issue-rp2350-freertos-usb.md)
+     for the full investigation and what we found, rather than starting
+     from scratch. SWD debugging the *FreeRTOS* `blink` target (not
+     `blink_bare`) with a breakpoint at the top of `main()` in
+     `src/main.c` is the most direct way to see it happen live — see
      [07-debugging-swd.md](07-debugging-swd.md).
    - **If `blink_bare` also fails the same way** — the problem is more
      fundamental than FreeRTOS: something in the toolchain, the board

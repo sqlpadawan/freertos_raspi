@@ -1,5 +1,11 @@
 # 08 — FreeRTOS Configuration
 
+> **Known issue:** the settings below let FreeRTOS build and run correctly
+> on Pico 2 (RP2350), but there's a separate, unresolved issue where
+> FreeRTOS + USB serial hangs on that chip specifically — not caused by
+> anything in this file. See
+> [10-known-issue-rp2350-freertos-usb.md](10-known-issue-rp2350-freertos-usb.md).
+
 `FreeRTOSConfig.h` at the repo root controls kernel behavior. Key settings
 used in this project, and why:
 
