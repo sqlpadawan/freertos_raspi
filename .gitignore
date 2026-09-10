@@ -16,3 +16,7 @@ CMakeCache.txt
 
 # OS cruft
 .DS_Store
+
+# Local Wi-Fi credentials — never commit these. Copy
+# src/wifi_connect/wifi_config.h.example to wifi_config.h and fill it in.
+src/wifi_connect/wifi_config.h

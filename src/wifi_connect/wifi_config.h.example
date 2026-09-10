@@ -1,0 +1,12 @@
+#pragma once
+
+/*
+ * Copy this file to wifi_config.h (in this same directory) and fill in
+ * your actual network credentials. wifi_config.h is gitignored — it will
+ * never be committed, so your credentials stay local to this machine.
+ *
+ * See docs/11-wifi-networking.md.
+ */
+
+#define WIFI_SSID     "your-network-name"
+#define WIFI_PASSWORD "your-network-password"

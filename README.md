@@ -58,6 +58,7 @@ Then follow the docs in order:
 8. [FreeRTOS configuration](docs/08-freertos-config.md)
 9. [Troubleshooting](docs/09-troubleshooting.md)
 10. [Known issue: FreeRTOS + USB on Pico 2](docs/10-known-issue-rp2350-freertos-usb.md)
+11. [Wi-Fi networking (Pico W / Pico 2 W)](docs/11-wifi-networking.md)
 
 ## Repo layout
 

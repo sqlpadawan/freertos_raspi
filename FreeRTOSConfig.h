@@ -72,6 +72,7 @@
 #define INCLUDE_uxTaskGetStackHighWaterMark         1
 #define INCLUDE_eTaskGetState                      1
 #define INCLUDE_xTimerPendFunctionCall              1
+#define INCLUDE_xSemaphoreGetMutexHolder             1
 
 /* Assert used by the kernel port; SDK's panic() halts and prints via stdio. */
 void vAssertCalled(const char *file, int line);

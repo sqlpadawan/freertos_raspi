@@ -8,8 +8,13 @@
 ├── src/
 │   ├── CMakeLists.txt          # App-level target definitions
 │   ├── main.c                  # Blink example: one FreeRTOS task toggles the LED
-│   └── blink_bare/
-│       └── main.c              # Diagnostic target: same blink, no FreeRTOS (see docs/09-troubleshooting.md)
+│   ├── blink_bare/
+│   │   └── main.c              # Diagnostic target: same blink, no FreeRTOS (see docs/09-troubleshooting.md)
+│   └── wifi_connect/           # W boards only — see docs/11-wifi-networking.md
+│       ├── main.c
+│       ├── lwipopts.h          # Required lwIP config, based on official reference
+│       ├── wifi_config.h.example  # Copy to wifi_config.h and fill in your credentials
+│       └── wifi_config.h       # Not tracked in git — your actual credentials
 ├── lib/                        # Git submodules (added on first setup)
 │   ├── pico-sdk/
 │   └── FreeRTOS-Kernel/
