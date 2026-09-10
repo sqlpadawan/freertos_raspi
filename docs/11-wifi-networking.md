@@ -6,6 +6,27 @@ applies to **W (wireless) boards** (`pico_w`, `pico2_w`); it doesn't build
 at all on plain `pico`/`pico2` boards (see "Why it doesn't build on
 non-W boards" below).
 
+## Recommended order when bringing up a new W board
+
+If this is the first time you're running *any* of this project's code on
+a particular physical board, test in this order rather than jumping
+straight to `wifi_connect`:
+
+1. **`blink_bare`** first — confirms the board, USB serial, and the
+   wireless-chip LED path all work, with zero FreeRTOS involved. The
+   simplest thing that could fail, so the cheapest first checkpoint.
+2. **`blink`** next — adds FreeRTOS into the mix, still no networking.
+3. **`wifi_connect`** last — the most complex target (FreeRTOS + USB +
+   the wireless chip + the full TCP/IP stack all running together).
+
+This isn't just caution for its own sake — it's what made the
+[known RP2350 issue](10-known-issue-rp2350-freertos-usb.md) tractable to
+diagnose instead of a guessing game: testing one layer at a time tells
+you immediately which layer a problem is in, rather than debugging three
+things at once. If something breaks with `wifi_connect`, having already
+confirmed `blink_bare` and `blink` work rules out the board, USB, and
+FreeRTOS itself as causes — narrowing it to Wi-Fi/lwIP specifically.
+
 ## What it does
 
 A single FreeRTOS task joins your Wi-Fi network and prints the assigned

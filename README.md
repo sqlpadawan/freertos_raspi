@@ -1,9 +1,10 @@
 # Pico FreeRTOS Dev Setup (Raspberry Pi 5 Host)
 
 Reproducible setup for developing **FreeRTOS** applications for the
-**Raspberry Pi Pico / Pico 2** (RP2040 / RP2350), using a **Raspberry Pi 5**
-running **Raspberry Pi OS** as the development machine, with **VS Code** as
-the IDE.
+**Raspberry Pi Pico family** (Pico, Pico 2, Pico W, Pico 2 W — RP2040 /
+RP2350, plain and wireless variants), using a **Raspberry Pi 5** running
+**Raspberry Pi OS** as the development machine, with **VS Code** as the
+IDE.
 
 This repo is designed to be cloned onto a fresh Raspberry Pi OS install and
 bring you from "blank SD card" to "blinking LED under FreeRTOS, with
@@ -30,7 +31,7 @@ knowledge, no undocumented manual steps.
 | Item | Role |
 |---|---|
 | Raspberry Pi 5 (running Raspberry Pi OS) | Development host — runs VS Code, toolchain, OpenOCD |
-| Raspberry Pi Pico or Pico 2 | FreeRTOS target (RP2040 or RP2350) |
+| Raspberry Pi Pico, Pico 2, Pico W, or Pico 2 W | FreeRTOS target (RP2040 or RP2350, plain or wireless) |
 | USB-A/C to Micro-USB/USB-C cable | Power + UF2 flashing |
 | (Recommended) [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/) | SWD + UART debugging, no flashing required |
 | (Alternative) second Pico as DIY probe, or 3 jumper wires to Pi 5 GPIO | SWD debugging without buying the official probe |
@@ -65,7 +66,7 @@ Then follow the docs in order:
 ```
 .
 ├── docs/                   # All setup & config documentation (this is the source of truth)
-├── src/                    # FreeRTOS application source (blink example)
+├── src/                    # Application source: blink, blink_bare, wifi_connect (W boards)
 ├── .vscode/                # Editor tasks, launch configs, recommended extensions
 ├── scripts/                 # Host setup / bootstrap scripts
 ├── lib/                    # Git submodules: pico-sdk, FreeRTOS-Kernel (added after first setup)
@@ -74,7 +75,19 @@ Then follow the docs in order:
 └── pico_sdk_import.cmake   # Standard Pico SDK import shim
 ```
 
+See [`docs/04-project-structure.md`](docs/04-project-structure.md) for
+the full breakdown, including `src/`'s subdirectories.
+
 ## Status
+
+Verified on **real Pico W (RP2040, wireless) hardware**:
+- [x] `blink_bare` — LED (via wireless chip) blinks, USB serial prints correctly
+- [x] `blink` (FreeRTOS) — LED (via wireless chip) blinks, USB serial prints correctly
+- [ ] `wifi_connect` — builds cleanly (verified in a sandbox, no physical
+      board), not yet tested on real hardware
+- [ ] Debug Probe / SWD connection not yet tested on this specific board
+      (tested and confirmed working on Pico 2, see below — expected to
+      work the same way on Pico W, not yet confirmed)
 
 Verified on **real Pico 2 (RP2350) hardware**:
 - [x] Docs scaffolded
@@ -86,10 +99,10 @@ Verified on **real Pico 2 (RP2350) hardware**:
 - [ ] `blink` (FreeRTOS) — **known issue**, hangs before USB comes up; see
       [docs/10-known-issue-rp2350-freertos-usb.md](docs/10-known-issue-rp2350-freertos-usb.md)
 
-Not yet verified on **real Pico (RP2040) hardware** (build-only, in a
-sandbox with no physical board) — expected to work based on the FreeRTOS
-RP2040 port being mature and widely used, but not yet confirmed
-end-to-end on this project specifically:
+Not yet verified on **real plain Pico (RP2040, non-wireless) hardware**
+(build-only, in a sandbox with no physical board) — expected to work
+based on both the FreeRTOS RP2040 port and the Pico W results above, but
+not yet confirmed on this exact non-W board:
 - [ ] UF2 flashing
 - [ ] `blink` (FreeRTOS) — LED + USB serial
 - [ ] Debug Probe / SWD connection

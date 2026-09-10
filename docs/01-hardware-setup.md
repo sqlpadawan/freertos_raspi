@@ -1,12 +1,14 @@
 # 01 — Hardware Setup
 
-> **This project targets plain (non-wireless) Pico / Pico 2 boards.** If
-> your board is a **Pico W** or **Pico 2 W** (has a wireless/Bluetooth
-> chip), the blink example's LED code won't work as-is — the onboard LED
-> on W boards is wired through the wireless chip, not a plain GPIO pin.
-> Everything else in this repo (build, flash, debug) still applies; see
-> [09-troubleshooting.md](09-troubleshooting.md#build-succeeds-but-board-does-nothing-after-flashing-led-not-blinking)
-> for what to change if you have a W board.
+> **W (wireless) boards are supported.** Pico W and Pico 2 W have their
+> onboard LED wired through the CYW43439 wireless chip rather than a
+> plain GPIO pin — this project's `blink` and `blink_bare` targets
+> already handle both cases automatically (no code changes needed), by
+> detecting which kind of board you're building for. Just set
+> `PICO_BOARD` to `pico_w` (or `pico2_w`) — see
+> [05-building.md](05-building.md) for how. See
+> [08-freertos-config.md](08-freertos-config.md#w-wireless-boards) for
+> what's actually happening under the hood.
 
 > **If you're choosing between a Pico and a Pico 2 for this project:**
 > the FreeRTOS example currently has a known, unresolved issue on **Pico 2
@@ -20,7 +22,7 @@
 | Item | Notes |
 |---|---|
 | Raspberry Pi 5 | Host machine, running Raspberry Pi OS (64-bit recommended) |
-| Raspberry Pi Pico or Pico 2 (non-W) | The FreeRTOS target. Pico = RP2040, Pico 2 = RP2350 |
+| Raspberry Pi Pico or Pico 2 | The FreeRTOS target. Pico = RP2040, Pico 2 = RP2350. W (wireless) variants — Pico W, Pico 2 W — are also supported, see the callout above |
 | Micro-USB (Pico) or USB-C (Pico 2) cable | Power + flashing via UF2 bootloader |
 | microSD card / SSD for the Pi 5 | Raspberry Pi OS install media |
 | **Recommended:** [Raspberry Pi Debug Probe](https://www.raspberrypi.com/products/debug-probe/) | Official USB-to-SWD/UART dongle — plug-and-play SWD debugging |
