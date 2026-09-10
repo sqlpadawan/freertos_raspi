@@ -1,6 +1,12 @@
 /*
  * Blink example: a single FreeRTOS task toggles the onboard LED.
  * See docs/04-project-structure.md and docs/08-freertos-config.md.
+ *
+ * LED handling is portable across plain boards (Pico, Pico 2 — LED on a
+ * normal GPIO) and "W" wireless boards (Pico W, Pico 2 W — LED wired
+ * through the CYW43439 wireless chip, not a plain GPIO). This is the
+ * same #ifdef pattern used by pico-examples upstream. See
+ * docs/01-hardware-setup.md for why W boards need this.
  */
 
 #include <stdio.h>
@@ -8,24 +14,53 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#ifndef PICO_DEFAULT_LED_PIN
-#warning "PICO_DEFAULT_LED_PIN not defined for this board"
+#if defined(CYW43_WL_GPIO_LED_PIN)
+#include "pico/cyw43_arch.h"
+#elif !defined(PICO_DEFAULT_LED_PIN)
+#warning "Neither PICO_DEFAULT_LED_PIN nor CYW43_WL_GPIO_LED_PIN is defined for this board"
 #endif
 
 #define BLINK_TASK_STACK_SIZE   256
 #define BLINK_TASK_PRIORITY     (tskIDLE_PRIORITY + 1)
 #define BLINK_PERIOD_MS         500
 
+/* Returns true on success. On W boards this also brings up the wireless
+ * chip driver (cyw43_arch_init()), since the LED is wired through it —
+ * no actual Wi-Fi/Bluetooth use happens here, this is the minimal init
+ * needed just to reach the LED pin. */
+static bool led_init(void) {
+#if defined(CYW43_WL_GPIO_LED_PIN)
+    return cyw43_arch_init() == 0;
+#elif defined(PICO_DEFAULT_LED_PIN)
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+    return true;
+#else
+    return false;
+#endif
+}
+
+static void led_set(bool led_on) {
+#if defined(CYW43_WL_GPIO_LED_PIN)
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_on);
+#elif defined(PICO_DEFAULT_LED_PIN)
+    gpio_put(PICO_DEFAULT_LED_PIN, led_on);
+#else
+    (void)led_on;
+#endif
+}
+
 static void blink_task(void *params) {
     (void)params;
 
-    gpio_init(PICO_DEFAULT_LED_PIN);
-    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+    if (!led_init()) {
+        printf("LED init failed\n");
+    }
 
     bool led_on = false;
     for (;;) {
         led_on = !led_on;
-        gpio_put(PICO_DEFAULT_LED_PIN, led_on);
+        led_set(led_on);
         printf("LED %s\n", led_on ? "ON" : "OFF");
         vTaskDelay(pdMS_TO_TICKS(BLINK_PERIOD_MS));
     }
