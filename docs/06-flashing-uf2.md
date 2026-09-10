@@ -34,11 +34,44 @@ running application code.
 
 ## Serial output
 
-With the blink example running, view `printf` output over USB serial:
+With the blink example running, view `printf` output over USB serial.
+
+### Find all connected serial devices
+
+```bash
+ls /dev/ttyACM*
+```
+
+If you only have the target board plugged in, you'll likely see exactly
+one device (`/dev/ttyACM0`). If you also have a Debug Probe connected
+(see [07-debugging-swd.md](07-debugging-swd.md)), or more than one board,
+you'll see more than one — e.g. `/dev/ttyACM0  /dev/ttyACM1`. There's no
+guaranteed rule for which number goes to which device — it depends on
+plug-in order, and can shift between reboots.
+
+### Connect and check if it's the right one
+
+Just try one:
 
 ```bash
 minicom -D /dev/ttyACM0 -b 115200
 ```
 
-(Exit minicom with `Ctrl+A` then `X`.) The device path may be `/dev/ttyACM1`
-etc. if other serial devices are attached — check `ls /dev/ttyACM*`.
+If it's the target board running blink, you'll see `LED ON` / `LED OFF`
+(or `bare LED ON` / `bare LED OFF` for `blink_bare`) printing every half
+second. If the terminal stays completely blank, that's not necessarily
+wrong — it likely means this device belongs to something else (like the
+Debug Probe's own UART pass-through, which is silent unless you've
+specifically wired it up). Exit (`Ctrl+A` then `X`) and try the next one:
+
+```bash
+minicom -D /dev/ttyACM1 -b 115200
+```
+
+### If you want to be certain which device is which, instead of guessing
+
+Unplug just the target board (leave anything else, like a Debug Probe,
+connected), then run `ls /dev/ttyACM*` again. Whichever device
+disappeared was the target's. This is slower than just trying each one,
+but removes any ambiguity — useful if you have several devices connected
+at once and guessing would take a while.
