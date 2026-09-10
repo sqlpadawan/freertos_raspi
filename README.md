@@ -60,6 +60,7 @@ Then follow the docs in order:
 9. [Troubleshooting](docs/09-troubleshooting.md)
 10. [Known issue: FreeRTOS + USB on Pico 2](docs/10-known-issue-rp2350-freertos-usb.md)
 11. [Wi-Fi networking (Pico W / Pico 2 W)](docs/11-wifi-networking.md)
+12. [Debug Probe reference: RTT and firmware updates](docs/12-debug-probe-reference.md)
 
 ## Repo layout
 

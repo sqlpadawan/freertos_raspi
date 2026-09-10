@@ -85,6 +85,12 @@ next steps, if picked up again later:
   workaround that sidesteps the issue entirely — this project already
   has Debug Probe UART wiring documented in
   [01-hardware-setup.md](01-hardware-setup.md), which could carry this.
+- **Try RTT instead of USB CDC** — see
+  [12-debug-probe-reference.md](12-debug-probe-reference.md#rtt-printf-output-with-no-usb-or-uart-at-all).
+  RTT sends output over SWD, never touching USB at all. Since this hang
+  is isolated to tinyusb specifically, RTT is a plausible way to get
+  working `printf` output on Pico 2 without needing USB to come up —
+  untried, but worth trying before this one specifically.
 
 ## What is and isn't affected
 

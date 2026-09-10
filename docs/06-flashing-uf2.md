@@ -54,8 +54,13 @@ plug-in order, and can shift between reboots.
 Just try one:
 
 ```bash
-minicom -D /dev/ttyACM0 -b 115200
+minicom -D /dev/ttyACM0 -b 115200 -o
 ```
+
+(`-o` disables minicom's modem-init string — not needed for a plain
+serial device like this, and skipping it avoids some garbled-output
+issues people occasionally see. This matches Raspberry Pi's own
+recommended `minicom` invocation for the Debug Probe's serial port.)
 
 If it's the target board running blink, you'll see `LED ON` / `LED OFF`
 (or `bare LED ON` / `bare LED OFF` for `blink_bare`) printing every half
@@ -65,7 +70,7 @@ Debug Probe's own UART pass-through, which is silent unless you've
 specifically wired it up). Exit (`Ctrl+A` then `X`) and try the next one:
 
 ```bash
-minicom -D /dev/ttyACM1 -b 115200
+minicom -D /dev/ttyACM1 -b 115200 -o
 ```
 
 ### If you want to be certain which device is which, instead of guessing

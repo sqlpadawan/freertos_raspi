@@ -20,14 +20,14 @@
         {
             "label": "Flash Pico (RP2040) via OpenOCD/SWD",
             "type": "shell",
-            "command": "openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c \"program ${workspaceFolder}/build/src/blink.elf verify reset exit\"",
+            "command": "openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c \"adapter speed 5000\" -c \"program ${workspaceFolder}/build/src/blink.elf verify reset exit\"",
             "problemMatcher": [],
             "detail": "For the original Pico. Requires a Debug Probe (official or DIY) wired per docs/07-debugging-swd.md. Swap to interface/linuxgpiod.cfg if using direct Pi GPIO wiring instead."
         },
         {
             "label": "Flash Pico 2 (RP2350) via OpenOCD/SWD",
             "type": "shell",
-            "command": "openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c \"program ${workspaceFolder}/build/src/blink.elf verify reset exit\"",
+            "command": "openocd -f interface/cmsis-dap.cfg -f target/rp2350.cfg -c \"adapter speed 5000\" -c \"program ${workspaceFolder}/build/src/blink.elf verify reset exit\"",
             "problemMatcher": [],
             "detail": "For the Pico 2. Requires a Debug Probe (official or DIY) wired per docs/07-debugging-swd.md. Swap to interface/linuxgpiod.cfg if using direct Pi GPIO wiring instead."
         }
